@@ -12,4 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # FastAPIを起動（0.0.0.0はコンテナ外からアクセスできるようにするため）
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+COPY start.sh .
+RUN chmod +x start.sh
+CMD ["./start.sh"]

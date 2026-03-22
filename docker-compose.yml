@@ -3,26 +3,23 @@ services:
   app:
     build: .
     ports:
-      - "8000:8000"       # ローカルの8000番ポートとコンテナの8000番を繋ぐ
-    environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/blogdb
-      - SECRET_KEY=your-secret-key-change-this-in-production
+      - "8000:8000"
+    env_file:
+      - .env                 # .envファイルから環境変数を読み込む
     depends_on:
-      - db               # dbが起動してからappを起動する
+      - db
     volumes:
-      - .:/app            # ローカルのファイル変更がコンテナに即反映される
+      - .:/app
 
   # PostgreSQL
   db:
     image: postgres:16
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=blogdb
+    env_file:
+      - .env                 # .envファイルから環境変数を読み込む
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # DBのデータを永続化
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
