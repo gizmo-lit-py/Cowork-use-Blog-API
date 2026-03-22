@@ -1,0 +1,28 @@
+services:
+  # FastAPIアプリ
+  app:
+    build: .
+    ports:
+      - "8000:8000"       # ローカルの8000番ポートとコンテナの8000番を繋ぐ
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/blogdb
+      - SECRET_KEY=your-secret-key-change-this-in-production
+    depends_on:
+      - db               # dbが起動してからappを起動する
+    volumes:
+      - .:/app            # ローカルのファイル変更がコンテナに即反映される
+
+  # PostgreSQL
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=blogdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # DBのデータを永続化
+
+volumes:
+  postgres_data:

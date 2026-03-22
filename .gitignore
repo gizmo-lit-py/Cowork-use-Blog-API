@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 環境変数（パスワードとか秘密情報が入るファイル）
+.env
+
+# Docker
+postgres_data/
+
+# Mac
+.DS_Store
