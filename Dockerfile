@@ -14,4 +14,4 @@ COPY . .
 # FastAPIを起動（0.0.0.0はコンテナ外からアクセスできるようにするため）
 COPY start.sh .
 RUN chmod +x start.sh
-CMD ["./start.sh"]
+CMD ["sh","./start.sh"]
