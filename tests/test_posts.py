@@ -18,6 +18,12 @@ def get_auth_header(client):
     return {"Authorization": f"Bearer {token}"}
 
 
+def create_tag(client, headers, name="Python"):
+    response = client.post("/tags/", json={"name": name}, headers=headers)
+    assert response.status_code == 201
+    return response.json()["id"]
+
+
 # ===== 記事作成のテスト =====
 
 def test_create_post_success(client):
@@ -44,6 +50,19 @@ def test_create_post_unauthorized(client):
     assert response.status_code == 401
 
 
+def test_create_post_with_invalid_tag_ids_returns_400(client):
+    """異常系: 存在しないタグIDを指定したら400エラー"""
+    headers = get_auth_header(client)
+
+    response = client.post("/posts/", json={
+        "title": "テスト記事",
+        "content": "テスト内容",
+        "tag_ids": [999],
+    }, headers=headers)
+
+    assert response.status_code == 400
+
+
 # ===== 記事取得のテスト =====
 
 def test_get_posts(client):
@@ -62,6 +81,26 @@ def test_get_post_not_found(client):
     """異常系: 存在しない記事を取得しようとしたら404エラー"""
     response = client.get("/posts/9999")
     assert response.status_code == 404
+
+
+def test_update_post_with_invalid_tag_ids_returns_400(client):
+    """異常系: 更新時に存在しないタグIDを指定したら400エラー"""
+    headers = get_auth_header(client)
+    tag_id = create_tag(client, headers)
+    post_response = client.post(
+        "/posts/",
+        json={"title": "記事", "content": "内容", "tag_ids": [tag_id]},
+        headers=headers,
+    )
+    post_id = post_response.json()["id"]
+
+    response = client.put(
+        f"/posts/{post_id}",
+        json={"tag_ids": [tag_id, 999]},
+        headers=headers,
+    )
+
+    assert response.status_code == 400
 
 
 # ===== 記事削除のテスト =====

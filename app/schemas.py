@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 # ===== ユーザー関連 =====
@@ -53,7 +54,7 @@ class PostCreate(BaseModel):
     """記事作成のリクエスト形式"""
     title: str
     content: str
-    tag_ids: Optional[List[int]] = []  # タグのIDリスト（任意）
+    tag_ids: List[int] = Field(default_factory=list)  # タグのIDリスト（任意）
 
 
 class PostUpdate(BaseModel):

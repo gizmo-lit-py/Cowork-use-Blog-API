@@ -1,12 +1,29 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import List
 
-from app.database import get_db
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
 from app import models, schemas
+from app.database import get_db
 from app.routers.auth import get_current_user
 
 router = APIRouter(prefix="/posts", tags=["記事"])
+
+
+def get_tags_or_raise(tag_ids: List[int], db: Session) -> List[models.Tag]:
+    """指定されたタグIDがすべて存在することを検証して返す"""
+    if not tag_ids:
+        return []
+
+    tags = db.query(models.Tag).filter(models.Tag.id.in_(tag_ids)).all()
+    found_tag_ids = {tag.id for tag in tags}
+    missing_tag_ids = sorted(set(tag_ids) - found_tag_ids)
+    if missing_tag_ids:
+        raise HTTPException(
+            status_code=400,
+            detail=f"存在しないタグIDがあります: {missing_tag_ids}",
+        )
+    return tags
 
 
 @router.post("/", response_model=schemas.PostResponse, status_code=201)
@@ -23,9 +40,7 @@ def create_post(
     )
 
     # タグを設定する
-    if post_data.tag_ids:
-        tags = db.query(models.Tag).filter(models.Tag.id.in_(post_data.tag_ids)).all()
-        new_post.tags = tags
+    new_post.tags = get_tags_or_raise(post_data.tag_ids, db)
 
     db.add(new_post)
     db.commit()
@@ -71,8 +86,7 @@ def update_post(
     if post_data.content is not None:
         post.content = post_data.content
     if post_data.tag_ids is not None:
-        tags = db.query(models.Tag).filter(models.Tag.id.in_(post_data.tag_ids)).all()
-        post.tags = tags
+        post.tags = get_tags_or_raise(post_data.tag_ids, db)
 
     db.commit()
     db.refresh(post)

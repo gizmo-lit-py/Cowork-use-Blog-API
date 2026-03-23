@@ -1,14 +1,18 @@
 """
 テストの共通設定ファイル
-pytestが自動で読み込んでくれる
+pytestが自動で読み込んでくる
 """
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app
+os.environ.setdefault("SECRET_KEY", "test-secret-key")
+
 from app.database import Base, get_db
+from app.main import app
 
 # テスト用のDBはSQLite（インメモリ）を使う
 # 本番はPostgreSQLだけど、テストは軽量なSQLiteで十分
@@ -36,6 +40,7 @@ def db():
 @pytest.fixture
 def client(db):
     """テスト用のAPIクライアント"""
+
     def override_get_db():
         try:
             yield db
