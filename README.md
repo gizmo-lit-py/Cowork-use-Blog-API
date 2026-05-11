@@ -105,3 +105,43 @@ Docker Desktopを起動した状態で、以下のコマンドを実行します
 
 ```bash
 docker compose up --build
+```
+
+起動後、以下にアクセスします。
+
+```text
+http://localhost:8000/docs
+```
+
+Swagger UIからAPIの確認・実行ができます。
+
+## 環境変数
+
+このアプリケーションでは、DB接続情報やJWTの秘密鍵を環境変数で管理します。
+
+例：
+
+```env
+DATABASE_URL=postgresql://user:password@db:5432/blogdb
+SECRET_KEY=your-secret-key
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=blogdb
+```
+
+`.env` はローカル環境用のため、GitHubには含めない方針です。
+
+## 開発時の補足
+
+ローカル開発用のDBファイルや秘密鍵ファイル、環境変数ファイルはリポジトリに含めない方針です。  
+`.env`、`*.db`、`*.pem` などは `.gitignore` の対象にしています。
+
+## AIツールの活用について
+
+本プロジェクトでは、実装時の調査やコード作成の補助としてAIツールを一部活用しました。  
+ただし、DB設計、認証方式、ルーター分割、エンドポイント構成などの設計判断は、学習内容を踏まえて自分で整理しながら実装しました。
+
+## 位置づけ
+
+このリポジトリは、FastAPI・PostgreSQL・Docker・JWT認証を学習するために作成したAPI開発の実践リポジトリです。  
+メインポートフォリオは、別リポジトリの「NextTrackAssist」です。
