@@ -13,3 +13,19 @@ postgres_data/
 
 # Mac
 .DS_Store
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Secret keys
+*.pem
+
+# Environment variables
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.pyc
